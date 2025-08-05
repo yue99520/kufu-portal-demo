@@ -50,7 +50,7 @@ export default function PortalPage() {
     if (!showV2) return;
   
     const script = document.createElement('script');
-    script.src = 'http://localhost:3000/kufu-anonymous-chat.js';
+    script.src = 'https://kufu-portal-demo.vercel.app/kufu-anonymous-chat.js';
     script.async = true;
   
     script.onload = () => {
@@ -58,7 +58,7 @@ export default function PortalPage() {
       if (window.KufuAnonymousChat) {
         new window.KufuAnonymousChat({
           clientId: 'QPj9Ulfz96',
-          apiBase: 'http://localhost:3000',
+          apiBase: 'https://kufu-portal-demo.vercel.app',
         });
       } else {
         console.error('KufuAnonymousChat not found on window');
