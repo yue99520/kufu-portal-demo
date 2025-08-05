@@ -3,6 +3,19 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
+declare global {
+  interface Window {
+    KufuAnonymousChat?: new (options: KufuAnonymousChatOptions) => void;
+  }
+
+  interface KufuAnonymousChatOptions {
+    clientId: string;
+    apiBase?: string;
+    title?: string;
+    position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+  }
+}
+
 export default function PortalPage() {
   const [clientId, setClientId] = useState('');
   const [clientSecret, setClientSecret] = useState('');
@@ -55,9 +68,8 @@ export default function PortalPage() {
   
     script.onload = () => {
       // 確保 KufuAnonymousChat 可用後再執行
-      const win = window as { KufuAnonymousChat?: any };
-      if (win.KufuAnonymousChat) {
-        new win.KufuAnonymousChat({
+      if (window.KufuAnonymousChat) {
+        new window.KufuAnonymousChat({
           clientId: 'QPj9Ulfz96',
           apiBase: 'https://kufu-portal-demo.vercel.app',
         });
