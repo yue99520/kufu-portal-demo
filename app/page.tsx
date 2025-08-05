@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 
 export default function PortalPage() {
@@ -14,8 +14,14 @@ export default function PortalPage() {
   }>(null);
   const [iframeOpen, setIframeOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showV2, setShowV2] = useState(false);
 
   const handleSubmit = async () => {
+    if (clientId === clientSecret && clientSecret === 'v2') {
+      console.log('show v2');
+      setShowV2(true);
+      return;
+    }
     setLoading(true);
     const res = await fetch('/api/chat/token/anonymous', {
       method: 'POST',
@@ -39,6 +45,33 @@ export default function PortalPage() {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!showV2) return;
+  
+    const script = document.createElement('script');
+    script.src = 'http://localhost:3000/kufu-anonymous-chat.js';
+    script.async = true;
+  
+    script.onload = () => {
+      // 確保 KufuAnonymousChat 可用後再執行
+      if (window.KufuAnonymousChat) {
+        new window.KufuAnonymousChat({
+          clientId: 'QPj9Ulfz96',
+          apiBase: 'http://localhost:3000',
+        });
+      } else {
+        console.error('KufuAnonymousChat not found on window');
+      }
+    };
+  
+    document.body.appendChild(script);
+  
+    return () => {
+      // 可選：清理 script
+      document.body.removeChild(script);
+    };
+  }, [showV2]);
 
   const widgetOrigin = process.env.NEXT_PUBLIC_WIDGET_ORIGIN;
 
@@ -90,15 +123,17 @@ export default function PortalPage() {
       </div>
 
       {/* Iframe Floating Widget */}
-      {iframeOpen && result && (
-        <div className="fixed bottom-4 right-4 w-[400px] h-[600px] border shadow-xl rounded-lg overflow-hidden z-50">
-          <iframe
-            src={`${widgetOrigin}/widget/portal?token=${result.token}&channel=${result.channel}&title=${encodeURIComponent('酷服 Portal Demo')}`}
-            className="w-full h-full"
-            frameBorder="0"
-          />
-        </div>
-      )}
+      {
+        showV2 && iframeOpen && result && (
+          <div className="fixed bottom-4 right-4 w-[400px] h-[600px] border shadow-xl rounded-lg overflow-hidden z-50">
+            <iframe
+              src={`${widgetOrigin}/widget/portal?token=${result.token}&channel=${result.channel}&title=${encodeURIComponent('酷服 Portal Demo')}`}
+              className="w-full h-full"
+              frameBorder="0"
+            />
+          </div>
+        )
+      }
     </div>
   );
 }
