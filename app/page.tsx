@@ -55,8 +55,9 @@ export default function PortalPage() {
   
     script.onload = () => {
       // 確保 KufuAnonymousChat 可用後再執行
-      if (window.KufuAnonymousChat) {
-        new window.KufuAnonymousChat({
+      const win = window as { KufuAnonymousChat?: any };
+      if (win.KufuAnonymousChat) {
+        new win.KufuAnonymousChat({
           clientId: 'QPj9Ulfz96',
           apiBase: 'https://kufu-portal-demo.vercel.app',
         });
